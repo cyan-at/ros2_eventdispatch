@@ -2,8 +2,8 @@ bloom toolchain:
 
 https://docs.ros.org/en/jazzy/How-To-Guides/Releasing/First-Time-Release.html
 
-[PR 907](https://github.com/ros2-gbp/ros2-gbp-github-org/issues/907)
-[PR 908](https://github.com/ros2-gbp/ros2-gbp-github-org/issues/908)
+* [PR 907](https://github.com/ros2-gbp/ros2-gbp-github-org/issues/907)
+* [PR 908](https://github.com/ros2-gbp/ros2-gbp-github-org/issues/908)
 
 https://robotics.stackexchange.com/a/117904/53773
 
