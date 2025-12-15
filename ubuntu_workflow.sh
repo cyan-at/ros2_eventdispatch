@@ -1,6 +1,13 @@
+curr=$(realpath "$0")
+curr_dir=$(dirname $curr)
+
+echo "curr="$curr
+echo "curr_dir="$curr_dir
+sleep 5
+
 rm -rf /tmp/bloom_ws/
-mkdir -p /tmp/bloom_ws/
-cd /tmp/bloom_ws/
+mkdir -p /tmp/bloom_ws/src
+cd /tmp/bloom_ws/src/
 
 repo="ros2_eventdispatch"
 
@@ -48,3 +55,5 @@ cd $WS_DIR/$repo
 echo "####################### debs live"
 echo $(realpath .)
 ls -l *.deb
+
+cp *.deb $curr_dir/
