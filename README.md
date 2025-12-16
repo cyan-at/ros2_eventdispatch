@@ -66,3 +66,4 @@ repeat until functionally tested:
 1. update source
 2. colcon ws build, test, func validate
 
+bloom-release --rosdistro jazzy ros2_eventdispatch
