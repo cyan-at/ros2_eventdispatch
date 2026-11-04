@@ -1,4 +1,4 @@
-"""Example 3: shake out the learning surface (learning.py).
+"""Example learning: shake out the learning surface (learning.py).
 
 Trivial TrainingEvents on a TrainingDispatch over a Blackboard,
 following example_core / example_cs's shape. What this
@@ -15,7 +15,7 @@ TrainingDispatch from eventdispatch.learning):
      settled duration beside the quote, and the dispatch clock
      settles to started_at + actual_duration.
 
-Run:  python -m eventdispatch.example3
+Run:  python -m eventdispatch.example_learning
 """
 from __future__ import annotations
 
