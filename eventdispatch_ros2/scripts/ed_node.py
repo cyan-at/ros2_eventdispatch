@@ -6,6 +6,9 @@ file_directory = os.path.dirname(os.path.abspath(__file__)) + "/"
 from eventdispatch.core import *
 from eventdispatch.common1 import *
 from eventdispatch.composite_semaphore import *
+from eventdispatch.learning import TrainingDispatch
+
+from eventdispatch_ros2.harness import CompletionHarness
 
 import rclpy
 from rclpy.node import Node
@@ -38,9 +41,16 @@ class DefaultValidator(object):
     def check(self, rosevent):
         return True
 
-class ROS2QueueCVED(CSBQCVED, Node):
+# Host dispatch (take2 directive, 2026-11-04): the SimClock
+# dispatch — TrainingDispatch (eventdispatch.learning), the
+# SimClockCSBQCVED lineage — not the threaded CSBQCVED, so
+# sim and robot share the dispatch, the event classes, and
+# the completion-record contract. Its run() is the advance
+# driver main() already starts as ros_ed_thread; the
+# ~/dispatch + ~/dispatch_list interface below is unchanged.
+class ROS2QueueCVED(TrainingDispatch, Node):
     def __init__(self, blackboard, name):
-        CSBQCVED.__init__(self,
+        TrainingDispatch.__init__(self,
             blackboard, name + "_dispatch")
         Node.__init__(self, name + "_dispatch")
 
@@ -255,6 +265,22 @@ def main(args=None):
     except Exception as e:
         node.get_logger().warn(f"failed make_validator, noop: {e}")
 
+    # Generic completion harness (carrier machinery): if the
+    # staged module provides a decider factory, run the
+    # take() -> decide -> submit loop for it.
+    harness = None
+    try:
+        import events as _events_module
+        _make_decider = getattr(_events_module, "make_decider", None)
+        if _make_decider is not None:
+            harness = CompletionHarness(
+                blackboard, node, _make_decider(blackboard, node))
+            harness.start()
+            blackboard["completion_harness"] = harness
+            node.get_logger().warn("completion harness started")
+    except Exception as e:
+        node.get_logger().warn(f"failed completion harness, noop: {e}")
+
     ##### volatiles
 
     blackboard["ros_ed_thread"] = Thread(
@@ -290,6 +316,9 @@ def main(args=None):
     except rclpy.executors.ExternalShutdownException:
         pass
     finally:
+        if harness is not None:
+            harness.stop()
+
         print("notifying all CSWaits {}".format(blackboard["volatile"]["cs_registry"]))
 
         node.clear_cs_waits(blackboard)
